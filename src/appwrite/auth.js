@@ -29,7 +29,7 @@ export class AuthService { //made a class which has a client property and inside
         }
     }
 
-    async getCurrentUser() { //identifies if user is logged in from curent device
+    async getCurrentUser() { 
         try {
             return await this.account.get("current");
         } catch (error) {
