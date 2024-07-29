@@ -18,7 +18,8 @@ const authSlice = createSlice({
     },
 });
 
-// authSlice.actions will retirns method define in reducers
+// authSlice.actions will return the actions or methods define in reducers
 export const { login, logout } = authSlice.actions;
 console.log(authSlice.reducer,"asad");
+
 export default authSlice.reducer;

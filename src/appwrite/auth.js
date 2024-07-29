@@ -36,6 +36,7 @@ export class AuthService { //made a class which has a client property and inside
             throw error
         }
     }
+    // https://nebula-coral-phi.vercel.app/
     async logout() {
         try {
             return await this.account.deleteSessions()
@@ -46,6 +47,5 @@ export class AuthService { //made a class which has a client property and inside
 
 };
 const authService = new AuthService();
-authService.createAccount()
 console.log(authService);
 export default authService;
