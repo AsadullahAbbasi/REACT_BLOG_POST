@@ -4,6 +4,7 @@ import { login as authLogin } from "../store/authSlice";
 import { Button, Input, Logo } from "./index";
 import { useForm } from "react-hook-form";
 import authService from "../appwrite/auth";
+import { useDispatch } from "react-redux";
 function Login() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -11,6 +12,7 @@ function Login() {
   const [error, setError] = useState(null);
 
   const Login = async (data) => {
+    setError(null);
     try {
       setError(null);
       const session = await authService.Login(data); //email,password tp be provided
@@ -84,7 +86,7 @@ function Login() {
             />
 
             <Button type="submit" className="w-full">
-              Sign
+              Sign in
             </Button>
           </form>
         </p>
