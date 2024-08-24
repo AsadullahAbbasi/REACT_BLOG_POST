@@ -10,6 +10,7 @@ function Select({ options = [], label, className = "", ...props }, ref) {
         </label>
       )}
       <select
+        ref={ref}
         {...props}
         className={`px-3 py-2 rounded-lg bg-white 
          text-black outline-none focus:bg-gray-50 
