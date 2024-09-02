@@ -36,7 +36,9 @@ const App = () => {
       ) : (
         <div>
           <Header />
-          <main>{/* <Outlet/>  */}</main>
+          <main>
+            <Outlet />{" "}
+          </main>
           <Footer />
         </div>
       )}

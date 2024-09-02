@@ -1,9 +1,9 @@
 import React, { useCallback } from "react";
 import { useForm } from "react-hook-form";
-import { Button, Input, Select, RTE } from "./index";
+import { Button, Input, Select, RTE } from "../index";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
-import appwriteService from "../appwrite/Config";
+import appwriteService from "../../appwrite/Config";
 
 function PostForm({ post }) {
   const {
@@ -11,6 +11,7 @@ function PostForm({ post }) {
     handleSubmit,
     watch,
     getValues,
+    setValue,
     formState: { errors },
     control,
   } = useForm({
@@ -60,24 +61,92 @@ function PostForm({ post }) {
       }
     }
     const slugTransform = useCallback((value) => {
-      if (value && typeof value === "string") {
+      if (value && typeof value === "string")
+        //no braces if one statement is being returned and function will exit if cond is true
         return value
           .trim()
           .toLowerCase()
           .replace(/^[a-zA-Z\d\s]+/g, "-")
           .replace(/\s/g, "-");
-      }
+
+      return ""; //runs if upper condition is false
     }, []);
 
     React.useEffect(() => {
-      register("slug", {
-        required: true,
-        transform: slugTransform,
+      // subscription triggers callback when value changes
+      //wrote clenaup function to unsubscribe or to stop listening to chnages return by subscribtion
+      //in first param we get obejct with all form fields as name and and value as value and in second we get objetc which content name of current field we chnaged type and values object inside it again so we destructure name out of second param
+      const subscription = watch((value, { name, type }) => {
+        if (name === "title") {
+          const slug = slugTransform(value.title);
+          setValue("slug", slug, { shouldValidate: true }); // do validation immediately and set error on run time
+        }
       });
-    }, [watch, slugTransform]);
 
-    return <div>PostForm</div>;
+      return () => subscription.unsubscribe(); // cleanup funtion when component will unmount
+    }, [watch, slugTransform, setValue]); //no benefit because these funcs are stable and wont change so we only subscribe to chnages once on initial mount and unsubcribe on unmount
   };
+
+  return (
+    <form onSubmit={handleSubmit(submit)} className="flex flex-wrap">
+      <div className="w-2/3 px-2">
+        <Input
+          label="Title :"
+          placeholder="Title"
+          className="mb-4"
+          {...register("title", { required: true })}
+        />
+        <Input
+          label="Slug :"
+          placeholder="Slug"
+          className="mb-4"
+          {...register("slug", { required: true })}
+          onInput={(e) => {
+            setValue("slug", slugTransform(e.currentTarget.value), {
+              shouldValidate: true,
+            });
+          }}
+        />
+        <RTE
+          label="Content :"
+          name="content"
+          control={control}
+          defaultValue={getValues("content")}
+        />
+      </div>
+      <div className="w-1/3 px-2">
+        <Input
+          label="Featured Image :"
+          type="file"
+          className="mb-4"
+          accept="image/png, image/jpg, image/jpeg, image/gif"
+          {...register("image", { required: !post })}
+        />
+        {post && (
+          <div className="w-full mb-4">
+            <img
+              src={appwriteService.getFilePreview(post.featuredImage)}
+              alt={post.title}
+              className="rounded-lg"
+            />
+          </div>
+        )}
+        <Select
+          options={["active", "inactive"]}
+          label="Status"
+          className="mb-4"
+          {...register("status", { required: true })}
+        />
+        <Button
+          type="submit"
+          bgColor={post ? "bg-green-500" : undefined}
+          className="w-full"
+        >
+          {post ? "Update" : "Submit"}
+        </Button>
+      </div>
+    </form>
+  );
 }
 export default PostForm;
 
@@ -114,3 +183,37 @@ export default PostForm;
 
 // In JavaScript and many APIs, setting a field to undefined means "do not change this field" or "omit this field" in the update operation.
 // By setting featuredImage to undefined when no new image file is provided, you're effectively telling the backend (through appwriteService.updatePost) that you do not want to update the featuredImage field. This preserves the existing image associated with the post.
+
+// function App() {
+//   // Step 1: Define a piece of state to hold a string value
+//   const [title, setTitle] = useState("Hello World");
+
+//   const changeTitle = useCallback(() => {
+//     console.log("asad");
+//   }, [title]);
+//   // Step 2: Use useEffect with title as a dependency
+//   useEffect(() => {
+//     // This effect runs whenever the 'title' changes
+//     console.log("Title has changed:", title);
+
+//     // You can perform other side effects here when 'title' changes
+//   }, [changeTitle]); // Only re-run the effect if title changes
+
+//   // Function to simulate a change in the title state
+
+//   return (
+//     <div>
+//       <h1>{title}</h1>
+//       {/* Step 3: Button to change the title, triggering the useEffect */}
+//       <button onClick={()=>setTitle(title+1)}>Change Title</button>
+//     </div>
+//   );
+// }
+
+// export default App;
+
+//giving function in useffect dependency runs if funtion insytance has chnaged and we have memoize function using callback remember component re renders if state or props changes
+
+//cleanup function are to unsubscribe or to stop listening to those changes becose these observers run behinfd the scene even if componnet is unmounted so cleanup funtion run in such a way that when componnet mount or initial render we sbscribe and cleanup funtion do not run but if component re render or use effect dependecies are disturbed then cleanup funtion run before running tha useeffect code or subscribing again it removes previous subscription and once we have subscribe and dependencie are not changign so useffect will not run but that callback inside subscription will continue to run
+
+// cleanup funtion runs until whole component is unmounted like conditional rendering where complete compoennt is not rendered then cleanup func will be trigered
