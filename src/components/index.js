@@ -10,8 +10,8 @@ import RTE from "./RTE";
 import Signup from "./Signup";
 import Login from "./Login";
 import PostForm from "./post-form/PostForm";
-import Container from "../Container/Container";
 import PostCard from "../components/PostCard";
+import AuthLayout from "../components/AuthLayout"
 export {
   Header,
   Footer,
@@ -22,6 +22,7 @@ export {
   Input,
   RTE,
   Select,
+  AuthLayout,
   Signup,
   Login,
   PostForm,

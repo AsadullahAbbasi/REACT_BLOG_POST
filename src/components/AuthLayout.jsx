@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom'
 
 function AuthLayout({ children, authentication = true }) {
   const navigate = useNavigate()
-  const authStatus = useSelector((state) => state.auth.status)
+  const authStatus = useSelector((state) => state.auth?.status)
   const [loading, setLoading] = React.useState(true);
 
   useEffect(() => {
@@ -24,7 +24,7 @@ function AuthLayout({ children, authentication = true }) {
   }, [authStatus, navigate])
 
   return (
-    <div>{loading ? "loading.." : children}</div>)  // runs when route is protected and user is lopgged in as well and route is no protected and user is not logged in
+    <div>{loading ? "loading.." : children}</div>)  // runs when route is protected and user is lopgged in as well and fo unprotected routes we navigate them to login signup programatically
 }
 
 export default AuthLayout
@@ -34,3 +34,5 @@ export default AuthLayout
 //does else if runs after if
 
 // Yes, else if runs only if the preceding if (or another else if) condition evaluates to false.
+
+//basicallywe have to handle two casees if user is trying to acess authenticated routes without logging in so we will navigate them to login and if he is logged in then and still trying to acesss login signup  then we will navigate them t home

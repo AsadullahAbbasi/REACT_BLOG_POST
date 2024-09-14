@@ -9,7 +9,6 @@ export class Service {
     this.Client.setEndpoint(conf.appwriteUrl).setProject(
       conf.appwriteProjectId
     );
-    this.account = new Account(this.Client);
     this.databases = new Databases(this.Client);
     this.bucket = new Storage(this.Client);
   }
@@ -33,15 +32,17 @@ export class Service {
       throw error;
     }
   }
-  async getPost() {
+  async getPost(slug) {
     try {
-      const post = await this.databases.listDocuments(
+      const post = await this.databases.getDocument(
         conf.appwriteDatabaseId,
-        conf.appwriteCollectionId
+        conf.appwriteCollectionId,
+        slug
       );
       return post;
     } catch (error) {
-      throw error;
+      console.log(error);
+      
     }
   }
 
@@ -95,18 +96,18 @@ export class Service {
     }
   }
 
-  async uploadFile(file) {
-    try {
-      const fileUploaded = await this.bucket.createFile(
-        conf.appwriteBucketId,
-        ID.unique(),
-        file
-      );
-      return fileUploaded;
-    } catch (error) {
-      console.log(error);
-      throw error;
-    }
+    async uploadFile(file) {
+      try {
+        const fileUploaded = await this.bucket.createFile(
+          conf.appwriteBucketId,
+          ID.unique(),
+          file
+        );
+        return fileUploaded;
+      } catch (error) {
+        console.log(error);
+        throw error;
+      }
   }
   async deleteFile(fileId) {
     try {
@@ -121,16 +122,13 @@ export class Service {
     }
   }
 
-  async getFilePreview(fileId) {
-    try {
-      const fileView = this.bucket.getFileView(conf.appwriteBucketId, fileId);
-      return fileView;
-    } catch (error) {
-      console.log(error);
-      throw error;
-    }
-  }
+  getFilePreview(fileId){
+    return this.bucket.getFilePreview(
+        conf.appwriteBucketId,
+        fileId
+    )
 }
-const Service = new Service();
+}
+const service = new Service();
 
-Service.deleteFile();
+export default service;

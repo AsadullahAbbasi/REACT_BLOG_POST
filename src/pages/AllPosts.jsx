@@ -1,17 +1,25 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Container, PostCard } from "../components";
-import appwriteService from "../appwrite/Config";
-import { useEffect, useState } from "react";
+import appwriteService from "../appwrite/config";
 
 function AllPosts() {
   const [posts, setPosts] = useState([]);
-  //as we need all posts so we have overwrited the default query
+  // Use useEffect to fetch posts when the component mounts
+  useEffect(() => {
+    // Fetch posts and update state
+    appwriteService.getPosts([]).then((posts) => {
+      if (posts) {
+        setPosts(posts.documents);
+      }
+    });
+  }, []); // Empty dependency array means this effect runs only once after initial render
+
   return (
     <div className="w-full py-8">
       <Container>
         {posts.map((post) => (
           <div key={post.$id}>
-            <PostCard post={post} />
+            <PostCard {...post} />
           </div>
         ))}
       </Container>

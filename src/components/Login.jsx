@@ -17,7 +17,9 @@ function Login() {
       setError(null);
       const session = await authService.Login(data); //email,password tp be provided
       if (session) {
-        dispatch(authLogin(response));
+        console.log(session);
+        
+        dispatch(authLogin(session));
         navigate("/");
       }
     } catch (error) {

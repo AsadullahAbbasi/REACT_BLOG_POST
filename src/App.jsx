@@ -14,9 +14,7 @@ const App = () => {
   const [loading, setLoading] = React.useState(true);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const authStatus = useSelector((state) => state.auth.status); //state return entire state wrapped in an object and our sttae is also an object with name auth which have property status
-  //whatever we will dispatch we will get as it is we we get userdata as object from appwrite so payload we will get object anf if we enclose that object into braces then objectname like userdara will be key and its value will be value so action.payload will be having an object with thr KEY USERDATA
-  useEffect(() => {
+   useEffect(() => {
     authService
       .getCurrentUser()
       .then((userData) => {

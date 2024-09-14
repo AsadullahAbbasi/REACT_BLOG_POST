@@ -3,9 +3,11 @@ import { useForm } from "react-hook-form";
 import { Button, Input, Select, RTE } from "../index";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
-import appwriteService from "../../appwrite/Config";
+import appwriteService from "../../appwrite/config";
 
 function PostForm({ post }) {
+  console.log(post);
+  
   const {
     register,
     handleSubmit,
@@ -17,75 +19,90 @@ function PostForm({ post }) {
   } = useForm({
     defaultValues: {
       title: post?.title || "",
-      slug: post?.slug || "",
+      slug: post?.$id || "",
       content: post?.content || "",
       status: post?.status || "active",
     },
   });
+  const navigate = useNavigate();
+  const userData = useSelector((state) => state.auth.userData);
+console.log(errors);
+
+  
 
   const submit = async (data) => {
-    const navigate = useNavigate();
-    const userData = useSelector((state) => state.auth.userData);
+    console.log(data,"form data");
+    
     //data from rhform
     if (post) {
       const file = data.image[0]
-        ? appwriteService.uploadFile(data.image[0])
+      ? appwriteService.uploadFile(data.image[0])
         : null; // provided image object
       if (file) {
-        appwriteService.deleteFile(post.featuredImage);
+       await appwriteService.deleteFile(post.featuredImage);
       }
       // upper updated image in bucket now we have to update post
       const dbPost = await appwriteService.updatePost(post.$id, {
         ...data,
+        content: data.content,
         featuredImage: file ? file.$id : undefined, //file id that we get from appwrite after uploading image
       });
-
+      
       if (dbPost) {
-        navigate(`/post/${dbPost.$id}`);
+        navigate(`/post/${dbPost.$id}`);  //we will capture post id in url
       }
     } else {
-      const file = data.image[0]
-        ? appwriteService.uploadFile(data.image[0])
+      const file =   data.image[0]
+      ? await appwriteService.uploadFile(data.image[0])
         : null; // provided image object
+      console.log(file);  
+      console.log("asad");
+      
       if (file) {
-        const fileId = file.$id;
+        const fileId = file?.$id;
         data.featuredImage = fileId;
         const dbPost = await appwriteService.createPost({
           ...data,
           featuredImage: file ? file.$id : undefined, //file id that we get from appwrite after uploading image
           userId: userData.$id,
         });
+        
         if (dbPost) {
-          navigate(`/post/${dbPost.$id}`);
+          navigate(`/post/${dbPost.$id}`); //we will capture post id in url
         }
       }
     }
-    const slugTransform = useCallback((value) => {
-      if (value && typeof value === "string")
-        //no braces if one statement is being returned and function will exit if cond is true
-        return value
-          .trim()
-          .toLowerCase()
-          .replace(/^[a-zA-Z\d\s]+/g, "-")
-          .replace(/\s/g, "-");
-
-      return ""; //runs if upper condition is false
-    }, []);
-
-    React.useEffect(() => {
-      // subscription triggers callback when value changes
-      //wrote clenaup function to unsubscribe or to stop listening to chnages return by subscribtion
-      //in first param we get obejct with all form fields as name and and value as value and in second we get objetc which content name of current field we chnaged type and values object inside it again so we destructure name out of second param
-      const subscription = watch((value, { name, type }) => {
-        if (name === "title") {
-          const slug = slugTransform(value.title);
-          setValue("slug", slug, { shouldValidate: true }); // do validation immediately and set error on run time
-        }
-      });
-
-      return () => subscription.unsubscribe(); // cleanup funtion when component will unmount
-    }, [watch, slugTransform, setValue]); //no benefit because these funcs are stable and wont change so we only subscribe to chnages once on initial mount and unsubcribe on unmount
+    
   };
+  
+  const slugTransform = useCallback((value) => {
+    console.log(userData);
+    if (value && typeof value === "string")
+      return value
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-zA-Z\d\s]+/g, "-")
+            .replace(/\s/g, "-");
+
+    return "";
+  }, []);
+
+  React.useEffect(() => {
+    // subscription triggers callback when value changes
+    //wrote clenaup function to unsubscribe or to stop listening to chnages return by subscribtion
+    //in first param we get obejct with all form fields as name and and value as value and in second we get objetc which content name of current field we chnaged type and values object inside it again so we destructure name out of second param
+    const subscription = watch((value, { name, type }) => {
+      console.log("Api");
+      if (name === "title") {
+        
+        const slug = slugTransform(value.title);
+        setValue("slug", slug, { shouldValidate: true }); // do validation immediately and set error on run time
+      }
+    });
+
+    return () => subscription.unsubscribe(); // cleanup funtion when component will unmount
+  }, [watch, slugTransform, setValue]); //no benefit because these funcs are stable and wont change so we only subscribe to chnages once on initial mount and unsubcribe on unmount
+
 
   return (
     <form onSubmit={handleSubmit(submit)} className="flex flex-wrap">
@@ -122,13 +139,13 @@ function PostForm({ post }) {
           accept="image/png, image/jpg, image/jpeg, image/gif"
           {...register("image", { required: !post })}
         />
-        {post && (
+        {post && post.featuredImage && (
           <div className="w-full mb-4">
             <img
               src={appwriteService.getFilePreview(post.featuredImage)}
               alt={post.title}
               className="rounded-lg"
-            />
+            />  
           </div>
         )}
         <Select

@@ -12,12 +12,12 @@ function RTE({ name, control, label, defaultValue = "" }) {
       <Controller
         name={name || "content "}
         control={control}
-        render={({ field: { onchange } }) => (
+        render={({ field: { onChange } }) => (
           <Editor
             initialValue={defaultValue}
+            apiKey="srkq9llnonu574jwv9b9cfrkp0lra6lhxt6w0eiie2akvlsl"
             branding={false}
             menubar="file edit view"
-            apiKey="srkq9llnonu574jwv9b9cfrkp0lra6lhxt6w0eiie2akvlsl"
             init={{
               plugins:
                 "anchor autolink charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount linkchecker",
@@ -26,7 +26,7 @@ function RTE({ name, control, label, defaultValue = "" }) {
               content_style:
                 "p { color: red } body { font-family: Helvetica, Arial, sans-serif; font-size: 14px; }",
             }}
-            onEditorChange={onchange}
+            onEditorChange={onChange}
           />
         )}
       />
