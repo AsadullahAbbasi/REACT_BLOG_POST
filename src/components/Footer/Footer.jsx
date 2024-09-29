@@ -9,7 +9,7 @@ function Footer() {
           <div className="w-full">
             <div className="flex flex-col justify-between h-full">
               <div className="mb-4 flex  justify-center">
-                <img src="../../../public/react.png" alt="Logo" className="w-20 h-20" />
+                <img src="/react.png" alt="Logo" className="w-20 h-20" />
               </div>
              
             </div>

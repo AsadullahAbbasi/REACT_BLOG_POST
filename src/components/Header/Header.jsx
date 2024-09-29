@@ -50,7 +50,7 @@ function Header() {
     <header className='w-full bg-white shadow-md'>
       <Container className='py-4 flex items-center justify-between'>
         <Link to='/' className='flex items-center px-2 lg:px-0'>
-          <img src='../../../public/react.png'  alt='Logo' width='40px' height='40px' />
+          <img src='/react.png'  alt='Logo' width='40px' height='40px' />
         </Link>
         {/* Mobile Menu Toggle Button */}
         <button
