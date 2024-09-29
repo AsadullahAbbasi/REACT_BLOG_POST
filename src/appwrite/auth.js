@@ -4,7 +4,7 @@ export class AuthService {
   //made a class which has a client property and inside the constructor we set the endpoint and project id of the appwrite account
   Client = new Client();
   constructor() {
-    console.log(Client);
+    // console.log(Client);
     this.Client.setEndpoint(conf.appwriteUrl).setProject(
       conf.appwriteProjectId
     );
@@ -12,7 +12,7 @@ export class AuthService {
   }
   async createAccount({ email, password, name }) {
     try {
-      console.log(this, "a");
+      // console.log(this, "a");
       const userAccount = await this.account.create(
         ID.unique(),
         email,
@@ -51,5 +51,5 @@ export class AuthService {
   }
 }
 const authService = new AuthService();
-console.log(authService);
+// console.log(authService);
 export default authService;

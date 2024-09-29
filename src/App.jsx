@@ -30,7 +30,7 @@ const App = () => {
   return (
     <>
       {loading ? (
-        <h1>Loading...</h1>
+        <h1 className="text-center translate-y-2/4 h-screen">Loading...</h1>
       ) : (
         <div>
           <Header />

@@ -9,29 +9,24 @@ export default function Post() {
     const [post, setPost] = useState(null);
     const { slug } = useParams();
     const navigate = useNavigate();
- console.log(slug);
- 
-    const userData = useSelector((state) => state.auth.userData);
+    // console.log(slug);
 
+    const userData = useSelector((state) => state.auth.userData);
     const isAuthor = post && userData ? post.userId === userData.$id : false; //only the one who created the post can edit it
-    console.log("🚀 ~ Post ~ userData.$id:", userData.$id)
-    console.log(isAuthor);
-    console.log(post?.userId);
-    
-  
+
     useEffect(() => {
         if (slug) {
             appwriteService.getPost(slug).then((post) => {
-                console.log(post);
-                
+                // console.log(post);
+
                 if (post) setPost(post);
                 else navigate("/");
             });
         }
         else navigate("/");
     }, [slug, navigate]);
-  console.log(post);
-  
+    // console.log(post);
+
     const deletePost = () => {
         appwriteService.deletePost(post.$id).then((status) => {
             if (status) {
@@ -42,9 +37,9 @@ export default function Post() {
     };
 
     return post ? (
-        <div className="py-8">
-            <Container>
-                <div className="w-full flex justify-center mb-4 relative border rounded-xl p-2">
+        <div className="py-8 w-full">
+            <div>
+                <div className=" flex justify-center mb-4 relative border rounded-xl p-2 max-w-[500px] mx-auto">
                     <img
                         src={appwriteService.getFilePreview(post.featuredImage)}
                         alt={post.title}
@@ -64,13 +59,13 @@ export default function Post() {
                         </div>
                     )}
                 </div>
-                <div className="w-full mb-6">
+                <div className="w-full mb-6 text-center">
                     <h1 className="text-2xl font-bold">{post.title}</h1>
                 </div>
-                <div className="browser-css">
+                <div className="text-center">
                     {parse(post.content)}
-                    </div>
-            </Container>
+                </div>
+            </div>
         </div>
     ) : null;
 }
